@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feliz Cumpleaños Jessi</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-image: url(https://p4.wallpaperbetter.com/wallpaper/812/416/58/lilo-and-stitch-dragon-toothless-how-to-train-your-dragon-wallpaper-preview.jpg);
+            background-repeat: no-repeat; background-size: cover; background-position: center;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            height: 100vh; font-family: sans-serif; background-color: black;
+        }
+        canvas#matrix { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        #content { position: relative; z-index: 10; text-align: center; color: #ff69b4; text-shadow: 0 0 10px #ff69b4; width: 90%; max-width: 600px; }
+        .message { font-size: clamp(2rem, 10vw, 4rem); font-weight: bold; display: none; animation: fadeIn 1s ease-in-out; }
+        #countdown { font-size: clamp(4rem, 20vw, 8rem); font-weight: bold; }
+        #start-btn { padding: 15px 30px; font-size: 1.5rem; background: #ff69b4; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 0 20px #ff69b4; z-index: 20; }
+        
+        #intermediate-text, #the-end { font-size: clamp(2rem, 10vw, 5rem); font-weight: bold; display: none; color: white; text-shadow: 0 0 20px #ff69b4; }
+        #the-end { color: #ff69b4; text-shadow: 0 0 30px #ff69b4; } /* Estilo especial para el final */
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+        #gif-container, #video-container { display: none; margin-top: 20px; width: 100%; }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            border-radius: 20px;
+            border: 5px solid #ff69b4;
+            box-shadow: 0 0 20px #ff69b4;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+    <button id="start-btn" onclick="startSurprise()">🎁 CLIC PARA EMPEZAR ❤️</button>
+
+    <div id="content">
+        <div id="countdown"></div>
+        <div id="m1" class="message">🎉HAPPY🎉</div>
+        <div id="m2" class="message">🎂BIRTHDAY🎂</div>
+        <div id="m3" class="message">🎊TO🎊</div>
+        <div id="m4" class="message">🫵YOU🫵</div>
+        <div id="m5" class="message">✨JESSICA👑</div>
+
+        <div id="gif-container">
+            <img src="https://i.pinimg.com/originals/05/50/47/05504733b6970858c4b48918cd405162.gif" style="width:100%; max-width:350px; border-radius:20px;">
+        </div>
+
+        <div id="intermediate-text">
+    En este día tan especial,<br>
+    el universo celebra tu vida.<br>
+    Eres luz que ilumina todo,<br>
+    la alegría que nunca termina.<br>
+    ¡Gracias por existir!<br>
+    ✨💖✨
+        </div>
+
+        <div id="video-container">
+            <div class="video-wrapper">
+                <div id="player"></div>
+            </div>
+        </div>
+
+        <div id="the-end">THE END</div>
+    </div>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="m.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        const letters = "HAPPYBIRTHDAYJESSIZOE1234567890@#$%^&일이삼사오육칠팔구";
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        let drops = Array(Math.floor(columns)).fill(1);
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgb(12,14,255)"; ctx.font = fontSize + "px arial";
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: '_kGFdMyU1V0', 
+                playerVars: { 'playsinline': 1, 'controls': 1 },
+                events: { 'onStateChange': onPlayerStateChange }
+            });
+        }
+
+        // Detectar cuando el video termina para mostrar THE END
+        function onPlayerStateChange(event) {
+            const music = document.getElementById('bg-music');
+            if (event.data == YT.PlayerState.PLAYING) {
+                music.pause();
+            }
+            if (event.data == YT.PlayerState.ENDED) {
+                document.getElementById('video-container').style.display = 'none';
+                document.getElementById('the-end').style.display = 'block';
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+            }
+        }
+
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        async function startSurprise() {
+            const btn = document.getElementById('start-btn');
+            const music = document.getElementById('bg-music');
+            const countdownEl = document.getElementById('countdown');
+            
+            btn.style.display = 'none';
+            music.play();
+
+            for (let i = 3; i > 0; i--) {
+                countdownEl.innerText = i;
+                await wait(1000);
+            }
+            countdownEl.style.display = 'none';
+
+            for (let i = 1; i <= 5; i++) {
+                let msg = document.getElementById('m' + i);
+                msg.style.display = 'block';
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                await wait(1200);
+                msg.style.display = 'none';
+            }
+
+            const gifContainer = document.getElementById('gif-container');
+            gifContainer.style.display = 'block';
+            await wait(5000); 
+            gifContainer.style.display = 'none'; 
+
+            const interText = document.getElementById('intermediate-text');
+            interText.style.display = 'block';
+            await wait(4000); 
+            interText.style.display = 'none'; 
+
+            document.getElementById('video-container').style.display = 'block';
+            player.playVideo();
+        }
+    </script>
+</body>
+</html>
